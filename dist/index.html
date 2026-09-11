@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CMR Comercial | Bajas</title>
+    <meta
+      name="description"
+      content="CMR Comercial para analizar bajas, motivos, agentes y niveles de retencion."
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f2f3a'/%3E%3Cpath d='M16 42h32M16 31h20M16 20h30' stroke='%23f2f7f5' stroke-width='7' stroke-linecap='round'/%3E%3Ccircle cx='47' cy='42' r='7' fill='%23e45c3f'/%3E%3Cpath d='M43 42h8' stroke='%23fff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar" aria-label="Secciones del CMR">
+      <div class="brand">
+        <div class="brand-mark">CM</div>
+        <div>
+          <strong>CMR Comercial</strong>
+          <span>Recupero y gestión</span>
+        </div>
+      </div>
+      <nav>
+        <button class="nav-item active" type="button" data-section="bajas">
+          <span class="icon">−</span>
+          Bajas
+        </button>
+        <button class="nav-item" type="button" data-section="altas">
+          <span class="icon">+</span>
+          Altas
+        </button>
+        <button class="nav-item" type="button" data-section="retencion">
+          <span class="icon">%</span>
+          Retención
+        </button>
+        <button class="nav-item" type="button" data-section="agentes">
+          <span class="icon">◎</span>
+          Agentes
+        </button>
+      </nav>
+      <div class="source-box">
+        <span>Fuente Bajas</span>
+        <strong>SharePoint: Solicitudes de baja</strong>
+        <small>Preparado para conectar con la lista real.</small>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Sección activa</p>
+          <h1>Bajas</h1>
+        </div>
+        <div class="actions">
+          <button type="button" class="ghost" id="resetFilters">Limpiar filtros</button>
+          <button type="button" class="primary">Actualizar datos</button>
+        </div>
+      </header>
+
+      <section class="filters" aria-label="Filtros de bajas">
+        <label>
+          Período
+          <select id="periodFilter">
+            <option value="all">Todo</option>
+            <option value="2026-09">Septiembre 2026</option>
+            <option value="2026-08">Agosto 2026</option>
+            <option value="2026-07">Julio 2026</option>
+          </select>
+        </label>
+        <label>
+          Agente
+          <select id="agentFilter">
+            <option value="all">Todos</option>
+          </select>
+        </label>
+        <label>
+          Motivo
+          <select id="reasonFilter">
+            <option value="all">Todos</option>
+          </select>
+        </label>
+        <label class="search">
+          Buscar
+          <input id="searchInput" type="search" placeholder="Cliente, estado o comentario" />
+        </label>
+      </section>
+
+      <section class="kpis" aria-label="Indicadores principales">
+        <article>
+          <span>Solicitudes</span>
+          <strong id="totalRequests">0</strong>
+          <small id="periodLabel">En el período seleccionado</small>
+        </article>
+        <article>
+          <span>Retenidas</span>
+          <strong id="retainedRequests">0</strong>
+          <small id="retentionRate">0% de retención</small>
+        </article>
+        <article>
+          <span>En gestión</span>
+          <strong id="activeRequests">0</strong>
+          <small>Casos abiertos o con seguimiento</small>
+        </article>
+        <article>
+          <span>Motivo principal</span>
+          <strong id="topReason">-</strong>
+          <small id="topReasonCount">0 casos</small>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <article class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Motivos de baja</h2>
+              <p>Distribución sobre los casos filtrados.</p>
+            </div>
+          </div>
+          <div class="bar-list" id="reasonBars"></div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Gestión por agente</h2>
+              <p>Volumen, retención y pendientes.</p>
+            </div>
+          </div>
+          <div class="agent-list" id="agentCards"></div>
+        </article>
+
+        <article class="panel full">
+          <div class="panel-head">
+            <div>
+              <h2>Solicitudes de baja</h2>
+              <p id="tableSummary">Casos filtrados para análisis comercial.</p>
+            </div>
+            <div class="legend">
+              <span><i class="dot retained"></i>Retenida</span>
+              <span><i class="dot open"></i>En gestión</span>
+              <span><i class="dot lost"></i>Baja confirmada</span>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>Motivo</th>
+                  <th>Agente</th>
+                  <th>Estado</th>
+                  <th>Retención</th>
+                  <th>Lectura comercial</th>
+                </tr>
+              </thead>
+              <tbody id="casesTable"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel full next-steps">
+          <h2>Campos clave para traer desde SharePoint</h2>
+          <div class="field-grid">
+            <span>Fecha de solicitud</span>
+            <span>Cliente / cuenta</span>
+            <span>Motivo de baja</span>
+            <span>Agente gestor</span>
+            <span>Estado</span>
+            <span>Resultado de retención</span>
+            <span>Plan / servicio</span>
+            <span>Comentario de gestión</span>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
