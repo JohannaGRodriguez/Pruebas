@@ -1,0 +1,13 @@
+{
+  "name": "cmr-comercial-m365-local",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start:m365": "node src/m365-sharepoint-server.mjs",
+    "check:m365": "node --check src/m365-sharepoint-server.mjs"
+  },
+  "dependencies": {
+    "@azure/msal-node": "5.4.0"
+  }
+}

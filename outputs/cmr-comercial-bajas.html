@@ -35,28 +35,13 @@
         </button>
         <button class="nav-item" type="button" data-section="retencion">
           <span class="icon">%</span>
-          Análisis
+          Retención
         </button>
         <button class="nav-item" type="button" data-section="agentes">
           <span class="icon">◎</span>
           Agentes
         </button>
       </nav>
-      <aside class="connection-status sidebar-connection" aria-live="polite">
-        <div class="connection-copy">
-          <strong id="connectionTitle">Microsoft 365 sin conectar</strong>
-          <span id="connectionMessage">
-            Inicia la conexión para leer Solicitudes de baja en SharePoint.
-          </span>
-        </div>
-        <div class="connection-actions">
-          <button type="button" class="primary" id="connectM365">Conectar M365</button>
-          <div class="device-code-box" id="deviceCodeBox" hidden>
-            <code id="deviceCodeValue"></code>
-            <button type="button" class="copy-code" id="copyDeviceCode">Copiar código</button>
-          </div>
-        </div>
-      </aside>
       <div class="source-box">
         <span>Fuente Bajas</span>
         <strong>SharePoint: Solicitudes de baja</strong>
@@ -72,6 +57,7 @@
         </div>
         <div class="actions">
           <button type="button" class="ghost" id="resetFilters">Limpiar filtros</button>
+          <button type="button" class="primary">Actualizar datos</button>
         </div>
       </header>
 
@@ -80,18 +66,9 @@
           Período
           <select id="periodFilter">
             <option value="all">Todo</option>
-            <option value="2026-12">Diciembre 2026</option>
-            <option value="2026-11">Noviembre 2026</option>
-            <option value="2026-10">Octubre 2026</option>
             <option value="2026-09">Septiembre 2026</option>
             <option value="2026-08">Agosto 2026</option>
             <option value="2026-07">Julio 2026</option>
-            <option value="2026-06">Junio 2026</option>
-            <option value="2026-05">Mayo 2026</option>
-            <option value="2026-04">Abril 2026</option>
-            <option value="2026-03">Marzo 2026</option>
-            <option value="2026-02">Febrero 2026</option>
-            <option value="2026-01">Enero 2026</option>
           </select>
         </label>
         <label>
@@ -135,7 +112,27 @@
         </article>
       </section>
 
-      <section class="workspace view-section active" data-view="bajas">
+      <section class="workspace">
+        <article class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Motivos de baja</h2>
+              <p>Distribución sobre los casos filtrados.</p>
+            </div>
+          </div>
+          <div class="bar-list" id="reasonBars"></div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Gestión por agente</h2>
+              <p>Volumen, retención y pendientes.</p>
+            </div>
+          </div>
+          <div class="agent-list" id="agentCards"></div>
+        </article>
+
         <article class="panel full">
           <div class="panel-head">
             <div>
@@ -157,6 +154,7 @@
                   <th>Motivo</th>
                   <th>Agente</th>
                   <th>Estado</th>
+                  <th>Retención</th>
                   <th>Lectura comercial</th>
                 </tr>
               </thead>
@@ -164,79 +162,19 @@
             </table>
           </div>
         </article>
-      </section>
 
-      <section class="workspace view-section" data-view="altas">
-        <article class="panel full">
-          <div class="panel-head">
-            <div>
-              <h2>Altas de clientes</h2>
-              <p id="altasSummary">Instalaciones por mes desde Jobs.</p>
-            </div>
-            <button type="button" class="primary" id="loadAltas">Traer altas</button>
+        <article class="panel full next-steps">
+          <h2>Campos clave para traer desde SharePoint</h2>
+          <div class="field-grid">
+            <span>Fecha de solicitud</span>
+            <span>Cliente / cuenta</span>
+            <span>Motivo de baja</span>
+            <span>Agente gestor</span>
+            <span>Estado</span>
+            <span>Resultado de retención</span>
+            <span>Plan / servicio</span>
+            <span>Comentario de gestión</span>
           </div>
-          <div class="altas-kpis" aria-label="Indicadores de altas">
-            <div>
-              <span>Instalaciones</span>
-              <strong id="altasTotal">0</strong>
-            </div>
-            <div>
-              <span>Localidades</span>
-              <strong id="altasCities">0</strong>
-            </div>
-            <div>
-              <span>Estados</span>
-              <strong id="altasStatuses">0</strong>
-            </div>
-          </div>
-          <p class="inline-status" id="altasStatus">Elegí un mes y consultá las instalaciones.</p>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Cliente</th>
-                  <th>Localidad</th>
-                  <th>Servicio</th>
-                  <th>Estado</th>
-                  <th>Responsable</th>
-                </tr>
-              </thead>
-              <tbody id="altasTable"></tbody>
-            </table>
-          </div>
-        </article>
-      </section>
-
-      <section class="workspace view-section analysis-workspace" data-view="retencion">
-        <article class="panel chart-panel compact-panel">
-          <div class="panel-head">
-            <div>
-              <h2>Motivos de baja</h2>
-              <p>Gestionadas vs retenidas por motivo.</p>
-            </div>
-          </div>
-          <div class="compare-list" id="reasonBars"></div>
-        </article>
-
-        <article class="panel chart-panel city-compact-panel">
-          <div class="panel-head">
-            <div>
-              <h2>Bajas por localidad</h2>
-              <p>Gestionadas vs retenidas por ciudad de servicio.</p>
-            </div>
-          </div>
-          <div class="compare-list" id="cityBars"></div>
-        </article>
-
-        <article class="panel full compact-panel">
-          <div class="panel-head">
-            <div>
-              <h2>Agentes: gestionadas vs retenidas</h2>
-              <p>Comparación por agente dentro del período filtrado.</p>
-            </div>
-          </div>
-          <div class="compare-list" id="agentComparison"></div>
         </article>
       </section>
     </main>
